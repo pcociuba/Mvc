@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNet.Mvc.Core;
 using Microsoft.Net.Http.Headers;
 
 namespace Microsoft.AspNet.Mvc
@@ -146,11 +147,29 @@ namespace Microsoft.AspNet.Mvc
 
         private List<MediaTypeHeaderValue> GetContentTypes(string firstArg, string[] args)
         {
+            var completeArgs = args.ToList();
+            completeArgs.Insert(0, firstArg);
             var contentTypes = new List<MediaTypeHeaderValue>();
-            contentTypes.Add(MediaTypeHeaderValue.Parse(firstArg));
-            foreach (var item in args)
+            foreach (var arg in completeArgs)
             {
-                var contentType = MediaTypeHeaderValue.Parse(item);
+                MediaTypeHeaderValue contentType = null;
+                try
+                {
+                    contentType = MediaTypeHeaderValue.Parse(arg);
+                }
+                catch (FormatException formatException)
+                {
+                    throw new InvalidOperationException(
+                        Resources.FormatProduces_UnparsableContentType(arg),
+                        formatException);
+                }
+
+                if (contentType.MatchesAllSubTypes || contentType.MatchesAllTypes || contentType.Type == "*")
+                {
+                    throw new InvalidOperationException(
+                        Resources.FormatProduces_MatchAllContentType(arg));
+                }
+
                 contentTypes.Add(contentType);
             }
 

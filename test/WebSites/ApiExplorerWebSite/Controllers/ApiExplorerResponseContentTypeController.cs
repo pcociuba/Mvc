@@ -15,20 +15,6 @@ namespace ApiExplorerWebSite
         }
 
         [HttpGet]
-        [Produces("*/*")]
-        public Product AllTypes()
-        {
-            return null;
-        }
-
-        [HttpGet]
-        [Produces("text/*")]
-        public Product Range()
-        {
-            return null;
-        }
-
-        [HttpGet]
         [Produces("application/json")]
         public Product Specific()
         {

@@ -16,6 +16,7 @@ using Microsoft.Framework.DependencyInjection.Fallback;
 using Microsoft.Framework.OptionsModel;
 using Microsoft.Net.Http.Headers;
 using Moq;
+using Newtonsoft.Json.Utilities;
 using Xunit;
 
 namespace Microsoft.AspNet.Mvc.Core.Test.ActionResults
@@ -614,6 +615,37 @@ namespace Microsoft.AspNet.Mvc.Core.Test.ActionResults
 
             // Assert
             response.VerifySet(resp => resp.ContentType = expectedResponseContentType);
+        }
+
+        [Theory]
+        [InlineData("application/*", "application/*")]
+        [InlineData("application/xml, application/*, application/json", "application/*")]
+        [InlineData("application/*, application/json", "application/*")]
+
+        [InlineData("*/json", "*/json")]
+        [InlineData("application/xml, */json, application/json", "*/json")]
+        [InlineData("*/json, application/json", "*/json")]
+
+        [InlineData("*/*", "*/*")]
+        [InlineData("application/xml, */*, application/json", "*/*")]
+        [InlineData("*/*, application/json", "*/*")]
+        public async Task ObjectResult_MatchAllContentType_Throws(string content, string invalidContentType)
+        {
+            // Arrange
+            var contentTypes = content.Split(',');
+            var objectResult = new ObjectResult(new Person() { Name = "John" });
+            objectResult.ContentTypes = contentTypes.Select(contentType => MediaTypeHeaderValue.Parse(contentType))
+                                                    .ToList();
+
+            // Act & Assert
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(
+                () => objectResult.ExecuteResultAsync(null));
+
+            var expectedMessage = string.Format("The content-type '{0}' added in the 'ContentTypes' property is " +
+              "invalid. A match all value for the media-type and media-subtype is not allowed." +
+              " Consider providing a more specific content type.",
+              invalidContentType);
+            Assert.Equal(expectedMessage, exception.Message);
         }
 
         private static ActionContext CreateMockActionContext(

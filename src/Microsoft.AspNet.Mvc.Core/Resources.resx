@@ -117,6 +117,15 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Produces_UnparsableContentType" xml:space="preserve">
+    <value>The argument '{0}' could not be parsed. See the inner exception for more information.</value>
+  </data>
+  <data name="Produces_MatchAllContentType" xml:space="preserve">
+    <value>The argument '{0}' is invalid. A match all value for the media-type and media-subtype is not allowed. Consider providing a more specific content type.</value>
+  </data>
+  <data name="ObjectResult_MatchAllContentType" xml:space="preserve">
+    <value>The content-type '{0}' added in the '{1}' property is invalid. A match all value for the media-type and media-subtype is not allowed. Consider providing a more specific content type.</value>
+  </data>
   <data name="AntiForgeryToken_AdditionalDataCheckFailed" xml:space="preserve">
     <value>The provided anti-forgery token failed a custom data check.</value>
   </data>

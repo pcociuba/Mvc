@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNet.Http.Core;
 using Microsoft.AspNet.Routing;
 using Moq;
@@ -24,6 +25,59 @@ namespace Microsoft.AspNet.Mvc
             // Act & Assert
             var exception = Assert.Throws<FormatException>(() => new ConsumesAttribute(contentType));
             Assert.Equal(expectedMessage, exception.Message);
+        }
+
+        [Theory]
+        [InlineData("", "")]
+        [InlineData("application/xml,, application/json", "")]
+        [InlineData(", application/json", "")]
+        [InlineData("invalid", "invalid")]
+        [InlineData("application/xml,invalid, application/json", "invalid")]
+        [InlineData("invalid, application/json", "invalid")]
+        public void Constructor_UnParsableContentType_Throws(string content, string invalidContentType)
+        {
+            // Act
+            var contentTypes = content.Split(',').Select(contentType => contentType.Trim()).ToArray();
+
+            // Assert
+            var ex = Assert.Throws<InvalidOperationException>(
+                       () => new ConsumesAttribute(contentTypes[0], contentTypes.Skip(1).ToArray()));
+            Assert.Equal(
+                string.Format("The argument '{0}' could not be parsed. See the inner exception for more information.",
+                              invalidContentType),
+                ex.Message);
+
+            var innerException = Assert.IsType<FormatException>(ex.InnerException);
+            Assert.Equal("Invalid value '" + (invalidContentType ?? "<null>") + "'.",
+                         innerException.Message);
+        }
+
+        [Theory]
+        [InlineData("application/*", "application/*")]
+        [InlineData("application/xml, application/*, application/json", "application/*")]
+        [InlineData("application/*, application/json", "application/*")]
+
+        [InlineData("*/json", "*/json")]
+        [InlineData("application/xml, */json, application/json", "*/json")]
+        [InlineData("*/json, application/json", "*/json")]
+
+        [InlineData("*/*", "*/*")]
+        [InlineData("application/xml, */*, application/json", "*/*")]
+        [InlineData("*/*, application/json", "*/*")]
+        public void Constructor_InvalidContentType_Throws(string content, string invalidContentType)
+        {
+            // Act
+            var contentTypes = content.Split(',').Select(contentType => contentType.Trim()).ToArray();
+
+            // Assert
+            var ex = Assert.Throws<InvalidOperationException>(
+                       () => new ConsumesAttribute(contentTypes[0], contentTypes.Skip(1).ToArray()));
+
+            Assert.Equal(
+                string.Format("The argument '{0}' is invalid. A match all value for the media-type" +
+                              " and media-subtype is not allowed. Consider providing a more specific content type.",
+                              invalidContentType),
+                ex.Message);
         }
 
         [Theory]

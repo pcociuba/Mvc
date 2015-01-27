@@ -11,6 +11,54 @@ namespace Microsoft.AspNet.Mvc.Core
             = new ResourceManager("Microsoft.AspNet.Mvc.Core.Resources", typeof(Resources).GetTypeInfo().Assembly);
 
         /// <summary>
+        /// The argument '{0}' could not be parsed. See the inner exception for more information.
+        /// </summary>
+        internal static string Produces_UnparsableContentType
+        {
+            get { return GetString("Produces_UnparsableContentType"); }
+        }
+
+        /// <summary>
+        /// The argument '{0}' could not be parsed. See the inner exception for more information.
+        /// </summary>
+        internal static string FormatProduces_UnparsableContentType(object p0)
+        {
+            return string.Format(CultureInfo.CurrentCulture, GetString("Produces_UnparsableContentType"), p0);
+        }
+
+        /// <summary>
+        /// The argument '{0}' is invalid. A match all value for the media-type and media-subtype is not allowed. Consider providing a more specific content type.
+        /// </summary>
+        internal static string Produces_MatchAllContentType
+        {
+            get { return GetString("Produces_MatchAllContentType"); }
+        }
+
+        /// <summary>
+        /// The argument '{0}' is invalid. A match all value for the media-type and media-subtype is not allowed. Consider providing a more specific content type.
+        /// </summary>
+        internal static string FormatProduces_MatchAllContentType(object p0)
+        {
+            return string.Format(CultureInfo.CurrentCulture, GetString("Produces_MatchAllContentType"), p0);
+        }
+
+        /// <summary>
+        /// The content-type '{0}' added in the '{1}' property is invalid. A match all value for the media-type and media-subtype is not allowed. Consider providing a more specific content type.
+        /// </summary>
+        internal static string ObjectResult_MatchAllContentType
+        {
+            get { return GetString("ObjectResult_MatchAllContentType"); }
+        }
+
+        /// <summary>
+        /// The content-type '{0}' added in the '{1}' property is invalid. A match all value for the media-type and media-subtype is not allowed. Consider providing a more specific content type.
+        /// </summary>
+        internal static string FormatObjectResult_MatchAllContentType(object p0, object p1)
+        {
+            return string.Format(CultureInfo.CurrentCulture, GetString("ObjectResult_MatchAllContentType"), p0, p1);
+        }
+
+        /// <summary>
         /// The provided anti-forgery token failed a custom data check.
         /// </summary>
         internal static string AntiForgeryToken_AdditionalDataCheckFailed
