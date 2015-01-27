@@ -18,14 +18,12 @@ namespace XmlFormattersWebSite
             return new PersonWrapper(person);
         }
 
-        public Type GetWrappingType(Type declaredType)
+        public Type WrappingType
         {
-            if (declaredType == typeof(Person))
+            get
             {
                 return typeof(PersonWrapper);
             }
-
-            return null;
         }
     }
 }

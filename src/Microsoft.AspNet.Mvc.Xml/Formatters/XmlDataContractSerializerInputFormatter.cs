@@ -178,7 +178,7 @@ namespace Microsoft.AspNet.Mvc.Xml
                     wrapperProvider = wrapperProviderFactory.GetProvider(wrapperFactoryProviderContext);
                     if (wrapperProvider != null)
                     {
-                        type = wrapperProvider.GetWrappingType(wrapperFactoryProviderContext.DeclaredType);
+                        type = wrapperProvider.WrappingType;
                         break;
                     }
                 }

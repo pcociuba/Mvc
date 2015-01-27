@@ -15,7 +15,7 @@ namespace Microsoft.AspNet.Mvc.Xml
         /// </summary>
         /// <param name="declaredType">The declared type which needs to be wrapped.</param>
         /// <returns>The wrapping type if the provider decides to wrap the given type, else null.</returns>
-        Type GetWrappingType(Type declaredType);
+        Type WrappingType { get; }
 
         /// <summary>
         /// Wraps the given object to the wrapping type provided by <see cref="GetWrappingType(Type)"/>.

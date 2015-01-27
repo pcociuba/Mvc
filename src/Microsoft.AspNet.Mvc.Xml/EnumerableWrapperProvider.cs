@@ -23,10 +23,13 @@ namespace Microsoft.AspNet.Mvc.Xml
         }
 
         /// <inheritdoc />
-        public Type GetWrappingType([NotNull] Type declaredType)
+        public Type WrappingType
         {
-            IWrapperProvider elementWrapperProvider = null;
-            return GetWrappingEnumerableType(out elementWrapperProvider);
+            get
+            {
+                IWrapperProvider elementWrapperProvider = null;
+                return GetWrappingEnumerableType(out elementWrapperProvider);
+            }
         }
 
         /// <inheritdoc />
@@ -68,7 +71,7 @@ namespace Microsoft.AspNet.Mvc.Xml
                 elementWrapperProvider = wrapperProviderFactory.GetProvider(wrapperProviderContext);
                 if (elementWrapperProvider != null)
                 {
-                    var wrappingType = elementWrapperProvider.GetWrappingType(wrapperProviderContext.DeclaredType);
+                    var wrappingType = elementWrapperProvider.WrappingType;
                     if (wrappingType != null)
                     {
                         wrappedOrDeclaredElementType = wrappingType;
@@ -77,7 +80,7 @@ namespace Microsoft.AspNet.Mvc.Xml
                     break;
                 }
             }
-            
+
             return typeof(DelegatingEnumerable<,>).MakeGenericType(wrappedOrDeclaredElementType, declaredElementType);
         }
     }

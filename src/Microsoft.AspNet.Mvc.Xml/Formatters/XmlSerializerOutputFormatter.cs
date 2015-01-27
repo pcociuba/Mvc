@@ -96,7 +96,7 @@ namespace Microsoft.AspNet.Mvc.Xml
                                                                             isSerialization: true));
                 if (wrapperProvider != null)
                 {
-                    type = wrapperProvider.GetWrappingType(type);
+                    type = wrapperProvider.WrappingType;
                     break;
                 }
             }

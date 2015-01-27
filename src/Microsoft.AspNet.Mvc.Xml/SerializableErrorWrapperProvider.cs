@@ -15,14 +15,12 @@ namespace Microsoft.AspNet.Mvc.Xml
             _context = context;
         }
 
-        public Type GetWrappingType([NotNull] Type declaredType)
+        public Type WrappingType
         {
-            if (declaredType == typeof(SerializableError))
+            get
             {
                 return typeof(SerializableErrorWrapper);
             }
-
-            return null;
         }
 
         public object Wrap(object original)
