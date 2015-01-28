@@ -18,7 +18,7 @@ namespace Microsoft.AspNet.Mvc.Xml
         Type WrappingType { get; }
 
         /// <summary>
-        /// Wraps the given object to the wrapping type provided by <see cref="GetWrappingType(Type)"/>.
+        /// Wraps the given object to the wrapping type provided by <see cref="WrappingType"/>.
         /// </summary>
         /// <param name="original">The original non-wrapped object</param>
         /// <returns></returns>

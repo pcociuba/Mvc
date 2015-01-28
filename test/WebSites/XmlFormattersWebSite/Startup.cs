@@ -67,6 +67,8 @@ namespace XmlFormattersWebSite
                         dcsInputFormatter.WrapperProviderFactoryProvider.WrapperProviderFactories.Add(new PersonWrapperProviderFactory());
                         dcsOutputFormatter.WrapperProviderFactoryProvider.WrapperProviderFactories.Add(new PersonWrapperProviderFactory());
                     });
+
+                services.AddWebApiConventions();
             });
 
             app.UseErrorReporter();
@@ -77,6 +79,7 @@ namespace XmlFormattersWebSite
                 routes.MapRoute("ActionAsMethod", "{controller}/{action}",
                     defaults: new { controller = "Home", action = "Index" });
 
+                routes.MapWebApiRoute("DefaultApi", "api/{controller}/{id?}");
             });
         }
     }

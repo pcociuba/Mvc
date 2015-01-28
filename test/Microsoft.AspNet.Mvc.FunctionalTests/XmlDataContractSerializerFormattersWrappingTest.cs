@@ -89,6 +89,7 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
         [Theory]
         [InlineData("http://localhost/Wrapper/IEnumerableOfWrappedTypes")]
         [InlineData("http://localhost/Wrapper/IQueryableOfWrappedTypes")]
+        [InlineData("http://localhost/api/People")]
         public async Task CanWrite_WrappedTypes(string url)
         {
             // Arrange
