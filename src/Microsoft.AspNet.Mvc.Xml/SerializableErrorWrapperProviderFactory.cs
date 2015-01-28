@@ -6,8 +6,12 @@ using Microsoft.AspNet.Mvc;
 
 namespace Microsoft.AspNet.Mvc.Xml
 {
+    /// <summary>
+    /// Creates an <see cref="IWrapperProvider"/> for the type <see cref="Microsoft.AspNet.Mvc.SerializableError"/>.
+    /// </summary>
     public class SerializableErrorWrapperProviderFactory : IWrapperProviderFactory
     {
+        /// <inheritdoc />
         public IWrapperProvider GetProvider([NotNull] WrapperProviderContext context)
         {
             if (context.DeclaredType == typeof(SerializableError))

@@ -51,5 +51,21 @@ namespace Microsoft.AspNet.Mvc.Xml
                 CheckCharacters = false
             };
         }
+
+        public static IWrapperProvider GetWrapperProvider(
+            [NotNull] IEnumerable<IWrapperProviderFactory> wrapperProviderFactories,
+            [NotNull] WrapperProviderContext wrapperProviderContext)
+        {
+            foreach (var wrapperProviderFactory in wrapperProviderFactories)
+            {
+                var wrapperProvider = wrapperProviderFactory.GetProvider(wrapperProviderContext);
+                if (wrapperProvider != null)
+                {
+                    return wrapperProvider;
+                }
+            }
+
+            return null;
+        }
     }
 }

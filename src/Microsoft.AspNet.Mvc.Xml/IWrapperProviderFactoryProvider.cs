@@ -7,10 +7,13 @@ using System.Collections.Generic;
 namespace Microsoft.AspNet.Mvc.Xml
 {
     /// <summary>
-    /// Defines an interface for getting list of wrapper provider factories.
+    /// Provides a list of wrapper provider factories.
     /// </summary>
     public interface IWrapperProviderFactoryProvider
     {
+        /// <summary>
+        /// List of <see cref="IWrapperProviderFactory"/>.
+        /// </summary>
         IList<IWrapperProviderFactory> WrapperProviderFactories { get; }
     }
 }

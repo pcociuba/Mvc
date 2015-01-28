@@ -5,8 +5,18 @@ using System;
 
 namespace Microsoft.AspNet.Mvc.Xml
 {
+    /// <summary>
+    /// Represents the context used by an <see cref="IWrapperProvider"/> to wrap or un-wrap types.
+    /// </summary>
     public class WrapperProviderContext
     {
+        /// <summary>
+        /// Initializes a <see cref="WrapperProviderContext"/> with the type that needs to be
+        /// wrapped and 
+        /// </summary>
+        /// <param name="declaredType">The declared type of the object that needs to be wrapped.</param>
+        /// <param name="isSerialization"><see langword="true"/> if the wrapper provider is invoked during
+        /// serialization, otherwise <see langword="false"/></param>
         public WrapperProviderContext([NotNull] Type declaredType, bool isSerialization)
         {
             DeclaredType = declaredType;

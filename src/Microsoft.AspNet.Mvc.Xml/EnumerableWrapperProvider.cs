@@ -14,7 +14,7 @@ namespace Microsoft.AspNet.Mvc.Xml
 
         public EnumerableWrapperProvider(
             [NotNull] Type sourceIEnumerableGenericType,
-            IEnumerable<IWrapperProviderFactory> wrapperProviderFactories,
+            [NotNull] IEnumerable<IWrapperProviderFactory> wrapperProviderFactories,
             [NotNull] WrapperProviderContext context)
         {
             _sourceIEnumerableGenericType = sourceIEnumerableGenericType;
@@ -35,25 +35,21 @@ namespace Microsoft.AspNet.Mvc.Xml
         /// <inheritdoc />
         public object Wrap(object original)
         {
-            if (original != null)
+            if (original == null)
             {
-                IWrapperProvider elementWrapperProvider = null;
-                var wrappingEnumerableType = GetWrappingEnumerableType(out elementWrapperProvider);
+                return null;
+            }
 
-                var wrappingEnumerableTypeConstructor = wrappingEnumerableType.GetConstructor(new[]
+            IWrapperProvider elementWrapperProvider;
+            var wrappingEnumerableType = GetWrappingEnumerableType(out elementWrapperProvider);
+
+            var wrappingEnumerableTypeConstructor = wrappingEnumerableType.GetConstructor(new[]
                     {
                         _sourceIEnumerableGenericType,
                         typeof(IWrapperProvider)
                     });
 
-                return wrappingEnumerableTypeConstructor.Invoke(new object[]
-                    {
-                        original,
-                        elementWrapperProvider
-                    });
-            }
-
-            return null;
+            return wrappingEnumerableTypeConstructor.Invoke(new object[] { original, elementWrapperProvider });
         }
 
         private Type GetWrappingEnumerableType(out IWrapperProvider elementWrapperProvider)

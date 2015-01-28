@@ -9,20 +9,19 @@ using System.Linq;
 namespace Microsoft.AspNet.Mvc.Xml
 {
     /// <summary>
-    /// Helper class to serialize <see cref="IEnumerable{T}"/> types by delegating them through a concrete 
-    /// implementation.
+    /// Serializes <see cref="IEnumerable{T}"/> types by delegating them through a concrete implementation.
     /// </summary>
-    /// <typeparam name="TWrappedOrDeclared">The wrapping or original type of the <see cref="IEnumerable{T}"/> 
+    /// <typeparam name="TWrapped">The wrapping or original type of the <see cref="IEnumerable{T}"/> 
     /// to proxy.</typeparam>
     /// <typeparam name="TDeclared">The type parameter of the original <see cref="IEnumerable{T}"/> 
     /// to proxy.</typeparam>
-    public class DelegatingEnumerable<TWrappedOrDeclared, TDeclared> : IEnumerable<TWrappedOrDeclared>
+    public class DelegatingEnumerable<TWrapped, TDeclared> : IEnumerable<TWrapped>
     {
-        private IEnumerable<TDeclared> _source;
+        private readonly IEnumerable<TDeclared> _source;
         private readonly IWrapperProvider _wrapperProvider;
 
         /// <summary>
-        /// Initializes a <see cref="DelegatingEnumerable{TWrappedOrDeclared, TDeclared}"/>. 
+        /// Initializes a <see cref="DelegatingEnumerable{TWrapped, TDeclared}"/>. 
         /// This constructor is necessary for <see cref="System.Runtime.Serialization.DataContractSerializer"/> 
         /// to serialize.
         /// </summary>
@@ -32,11 +31,11 @@ namespace Microsoft.AspNet.Mvc.Xml
         }
 
         /// <summary>
-        /// Initializes a <see cref="DelegatingEnumerable{TWrappedOrDeclared, TDeclared}"/> with the original
-        ///  <see cref="IEnumerable{T}"/> and the wrapper provider for individual elements.
+        /// Initializes a <see cref="DelegatingEnumerable{TWrapped, TDeclared}"/> with the original
+        ///  <see cref="IEnumerable{T}"/> and the wrapper provider for wrapping individual elements.
         /// </summary>
         /// <param name="source">The <see cref="IEnumerable{T}"/> instance to get the enumerator from.</param>
-        /// <param name="wrapperProvider">The wrapper for wrapping individual elements.</param>
+        /// <param name="wrapperProvider">The wrapper provider for wrapping individual elements.</param>
         public DelegatingEnumerable([NotNull] IEnumerable<TDeclared> source, IWrapperProvider wrapperProvider)
         {
             _source = source;
@@ -44,12 +43,13 @@ namespace Microsoft.AspNet.Mvc.Xml
         }
 
         /// <summary>
-        /// Get the enumerator of the associated <see cref="IEnumerable{T}"/>.
+        /// Gets a delegating enumerator of the original <see cref="IEnumerable{T}"/> source which is being
+        /// wrapped.
         /// </summary>
-        /// <returns>The enumerator of the <see cref="IEnumerable{T}"/> source.</returns>
-        public IEnumerator<TWrappedOrDeclared> GetEnumerator()
+        /// <returns>The delegating enumerator of the original <see cref="IEnumerable{T}"/> source.</returns>
+        public IEnumerator<TWrapped> GetEnumerator()
         {
-            return new DelegatingEnumerator<TWrappedOrDeclared, TDeclared>(_source.GetEnumerator(), _wrapperProvider);
+            return new DelegatingEnumerator<TWrapped, TDeclared>(_source.GetEnumerator(), _wrapperProvider);
         }
 
         /// <summary>
@@ -62,12 +62,13 @@ namespace Microsoft.AspNet.Mvc.Xml
         }
 
         /// <summary>
-        /// Get the enumerator of the associated <see cref="IEnumerable{T}"/>.
+        /// Gets a delegating enumerator of the original <see cref="IEnumerable{T}"/> source which is being
+        /// wrapped.
         /// </summary>
-        /// <returns>The enumerator of the <see cref="IEnumerable{T}"/> source.</returns>
+        /// <returns>The delegating enumerator of the original <see cref="IEnumerable{T}"/> source.</returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return new DelegatingEnumerator<TWrappedOrDeclared, TDeclared>(_source.GetEnumerator(), _wrapperProvider);
+            return GetEnumerator();
         }
     }
 }

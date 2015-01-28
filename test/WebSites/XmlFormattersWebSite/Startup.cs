@@ -62,10 +62,14 @@ namespace XmlFormattersWebSite
                         options.OutputFormatters.Add(dcsOutputFormatter);
                         options.OutputFormatters.Add(xmlSerializerOutputFormatter);
 
-                        xmlSerializerInputFormatter.WrapperProviderFactoryProvider.WrapperProviderFactories.Add(new PersonWrapperProviderFactory());
-                        xmlSerializerOutputFormatter.WrapperProviderFactoryProvider.WrapperProviderFactories.Add(new PersonWrapperProviderFactory());
-                        dcsInputFormatter.WrapperProviderFactoryProvider.WrapperProviderFactories.Add(new PersonWrapperProviderFactory());
-                        dcsOutputFormatter.WrapperProviderFactoryProvider.WrapperProviderFactories.Add(new PersonWrapperProviderFactory());
+                        xmlSerializerInputFormatter.WrapperProviderFactoryProvider
+                                                    .WrapperProviderFactories.Add(new PersonWrapperProviderFactory());
+                        xmlSerializerOutputFormatter.WrapperProviderFactoryProvider
+                                                    .WrapperProviderFactories.Add(new PersonWrapperProviderFactory());
+                        dcsInputFormatter.WrapperProviderFactoryProvider
+                                                    .WrapperProviderFactories.Add(new PersonWrapperProviderFactory());
+                        dcsOutputFormatter.WrapperProviderFactoryProvider
+                                                    .WrapperProviderFactories.Add(new PersonWrapperProviderFactory());
                     });
 
                 services.AddWebApiConventions();

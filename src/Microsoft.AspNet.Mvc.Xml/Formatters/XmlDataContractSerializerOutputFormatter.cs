@@ -42,11 +42,16 @@ namespace Microsoft.AspNet.Mvc.Xml
             SupportedMediaTypes.Add(MediaTypeHeaderValue.Parse("text/xml"));
 
             WriterSettings = writerSettings;
+
             _serializerSettings = new DataContractSerializerSettings();
 
             WrapperProviderFactoryProvider = new DefaultWrapperProviderFactoryProvider();
         }
 
+        /// <summary>
+        /// Gets or sets the provider which gives a list of <see cref="IWrapperProviderFactory"/> to
+        /// wrap the objects being serialized.
+        /// </summary>
         public IWrapperProviderFactoryProvider WrapperProviderFactoryProvider
         {
             get
@@ -95,8 +100,7 @@ namespace Microsoft.AspNet.Mvc.Xml
         /// <returns>The type of the object to be serialized.</returns>
         protected virtual Type ResolveType(Type declaredType, Type runtimeType)
         {
-            if (declaredType == null ||
-                declaredType == typeof(object))
+            if (declaredType == null || declaredType == typeof(object))
             {
                 if (runtimeType != null)
                 {
@@ -108,23 +112,19 @@ namespace Microsoft.AspNet.Mvc.Xml
         }
 
         /// <summary>
-        /// Gets the type of the object to be serialized.
+        /// 
         /// </summary>
         /// <param name="type">The original type to be serialized</param>
         /// <returns>The original or wrapped type provided by any <see cref="IWrapperProvider"/>s.</returns>
         protected virtual Type GetSerializableType(Type type)
         {
-            IWrapperProvider wrapperProvider = null;
-            foreach (var wrapperProviderFactory in WrapperProviderFactoryProvider.WrapperProviderFactories)
+            IWrapperProvider wrapperProvider = FormattingUtilities.GetWrapperProvider(
+                                                        WrapperProviderFactoryProvider.WrapperProviderFactories,
+                                                        new WrapperProviderContext(type, isSerialization: true));
+
+            if (wrapperProvider != null && wrapperProvider.WrappingType != null)
             {
-                wrapperProvider = wrapperProviderFactory.GetProvider(new WrapperProviderContext(
-                                                                            type,
-                                                                            isSerialization:  true));
-                if (wrapperProvider != null)
-                {
-                    type = wrapperProvider.WrappingType;
-                    break;
-                }
+                return wrapperProvider.WrappingType;
             }
 
             return type;
@@ -189,22 +189,23 @@ namespace Microsoft.AspNet.Mvc.Xml
 
                 var resolvedType = ResolveType(context.DeclaredType, runtimeType);
 
-                var originalOrWrappedType = GetSerializableType(resolvedType);
+                var wrappingType = GetSerializableType(resolvedType);
 
-                IWrapperProvider wrapperProvider = null;
-                foreach (var wrapperProviderFactory in WrapperProviderFactoryProvider.WrapperProviderFactories)
+                if (wrappingType != resolvedType)
                 {
-                    wrapperProvider = wrapperProviderFactory.GetProvider(new WrapperProviderContext(
-                                                                                    resolvedType,
-                                                                                    isSerialization: true));
+                    IWrapperProvider wrapperProvider = FormattingUtilities.GetWrapperProvider(
+                                                            WrapperProviderFactoryProvider.WrapperProviderFactories,
+                                                            new WrapperProviderContext(
+                                                                                declaredType: resolvedType,
+                                                                                isSerialization: true));
+
                     if (wrapperProvider != null)
                     {
                         obj = wrapperProvider.Wrap(obj);
-                        break;
                     }
                 }
-                
-                var dataContractSerializer = CreateSerializer(originalOrWrappedType);
+
+                var dataContractSerializer = CreateSerializer(wrappingType);
                 dataContractSerializer.WriteObject(xmlWriter, obj);
             }
 

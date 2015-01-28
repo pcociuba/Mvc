@@ -39,6 +39,10 @@ namespace Microsoft.AspNet.Mvc.Xml
             WrapperProviderFactoryProvider = new DefaultWrapperProviderFactoryProvider();
         }
 
+        /// <summary>
+        /// Gets or sets the provider which gives a list of <see cref="IWrapperProviderFactory"/> to
+        /// provide the wrapping type for de-serialization.
+        /// </summary>
         public IWrapperProviderFactoryProvider WrapperProviderFactoryProvider
         {
             get
@@ -148,29 +152,29 @@ namespace Microsoft.AspNet.Mvc.Xml
             {
                 var type = context.ModelType;
 
-                var wrapperFactoryProviderContext = new WrapperProviderContext(
-                                                            type,
-                                                            isSerialization: false);
+                IWrapperProvider wrapperProvider = FormattingUtilities.GetWrapperProvider(
+                                                                WrapperProviderFactoryProvider.WrapperProviderFactories,
+                                                                new WrapperProviderContext(
+                                                                                        declaredType: type,
+                                                                                        isSerialization: false));
 
-                IWrapperProvider wrapperProvider = null;
-                foreach (var wrapperProviderFactory in WrapperProviderFactoryProvider.WrapperProviderFactories)
+                if (wrapperProvider != null && wrapperProvider.WrappingType != null)
                 {
-                    wrapperProvider = wrapperProviderFactory.GetProvider(wrapperFactoryProviderContext);
-                    if (wrapperProvider != null)
-                    {
-                        type = wrapperProvider.WrappingType;
-                        break;
-                    }
+                    type = wrapperProvider.WrappingType;
                 }
-                
+
                 var serializer = CreateXmlSerializer(type);
 
                 var deserializedObject = serializer.Deserialize(xmlReader);
 
-                IUnwrappable unwrappable = deserializedObject as IUnwrappable;
-                if (unwrappable != null)
+                // Unwrap only if the original type was wrapped.
+                if (type != context.ModelType)
                 {
-                    deserializedObject = unwrappable.Unwrap(declaredType: context.ModelType);
+                    IUnwrappable unwrappable = deserializedObject as IUnwrappable;
+                    if (unwrappable != null)
+                    {
+                        deserializedObject = unwrappable.Unwrap(declaredType: context.ModelType);
+                    }
                 }
 
                 return Task.FromResult(deserializedObject);

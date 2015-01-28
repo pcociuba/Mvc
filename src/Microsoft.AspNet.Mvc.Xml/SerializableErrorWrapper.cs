@@ -86,6 +86,7 @@ namespace Microsoft.AspNet.Mvc.Xml
             }
         }
 
+        /// <inheritdoc />
         public object Unwrap([NotNull] Type declaredType)
         {
             return SerializableError;

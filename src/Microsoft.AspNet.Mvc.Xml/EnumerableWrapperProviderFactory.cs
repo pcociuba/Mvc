@@ -6,31 +6,45 @@ using System.Collections.Generic;
 
 namespace Microsoft.AspNet.Mvc.Xml
 {
+    /// <summary>
+    /// Creates an <see cref="EnumerableWrapperProvider"/> for interface types implementing the 
+    /// <see cref="IEnumerable{T}"/> type.
+    /// </summary>
     public class EnumerableWrapperProviderFactory : IWrapperProviderFactory
     {
         private readonly IWrapperProviderFactoryProvider _wrapperProviderFactoryProvider;
 
+        /// <summary>
+        /// Initializes an <see cref="EnumerableWrapperProviderFactory"/> with the  
+        /// </summary>
+        /// <param name="wrapperProviderFactoryProvider"></param>
         public EnumerableWrapperProviderFactory(IWrapperProviderFactoryProvider wrapperProviderFactoryProvider)
         {
             _wrapperProviderFactoryProvider = wrapperProviderFactoryProvider;
         }
 
+        /// <summary>
+        /// Gets an <see cref="EnumerableWrapperProvider"/> for the provided context.
+        /// </summary>
+        /// <param name="context">The <see cref="WrapperProviderContext"/>.</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// 
+        /// </remarks>
         public IWrapperProvider GetProvider([NotNull] WrapperProviderContext context)
         {
-            var declaredType = context.DeclaredType;
-
             if (context.IsSerialization)
             {
-                if (declaredType != null
-                    && declaredType.IsInterface()
-                    && declaredType.IsGenericType())
+                var declaredType = context.DeclaredType;
+
+                if (declaredType != null && declaredType.IsInterface() && declaredType.IsGenericType())
                 {
                     // check if we can get a enumerable generic type. Example: IEnumerable<SerializableError>
-                    var genericType = declaredType.ExtractGenericInterface(typeof(IEnumerable<>));
-                    if (genericType != null)
+                    var enumerableOfT = declaredType.ExtractGenericInterface(typeof(IEnumerable<>));
+                    if (enumerableOfT != null)
                     {
                         return new EnumerableWrapperProvider(
-                                                        genericType,
+                                                        enumerableOfT,
                                                         _wrapperProviderFactoryProvider.WrapperProviderFactories,
                                                         context);
                     }
