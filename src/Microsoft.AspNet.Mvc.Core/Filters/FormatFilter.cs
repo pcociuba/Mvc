@@ -4,6 +4,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNet.Mvc.Description;
+using Microsoft.Framework.DependencyInjection;
+using Microsoft.Framework.OptionsModel;
 using Microsoft.Net.Http.Headers;
 
 namespace Microsoft.AspNet.Mvc
@@ -18,10 +20,10 @@ namespace Microsoft.AspNet.Mvc
         /// Initializes an instance of <see cref="FormatFilter"/>.
         /// </summary>
         /// <param name="options"><see cref="MvcOptions"/>.</param>
-        public FormatFilter(MvcOptions options, ActionContext actionContext)
+        public FormatFilter(IOptions<MvcOptions> options, IScopedInstance<ActionContext> actionContext)
         {
             IsActive = true;
-            Format = GetFormat(actionContext);
+            Format = GetFormat(actionContext.Value);
 
             if (string.IsNullOrEmpty(Format))
             {
@@ -29,7 +31,7 @@ namespace Microsoft.AspNet.Mvc
                 return;
             }
 
-            ContentType = options.FormatterMappings.GetMediaTypeMappingForFormat(Format);
+            ContentType = options.Options.FormatterMappings.GetMediaTypeMappingForFormat(Format);
         }
 
         /// <summary>
@@ -39,7 +41,7 @@ namespace Microsoft.AspNet.Mvc
 
         /// <summary>
         /// <see cref="MediaTypeHeaderValue"/> for the format value in the current request.
-        /// </summary>
+        /// </summary
         public MediaTypeHeaderValue ContentType { get; private set; }
 
         /// <summary>
