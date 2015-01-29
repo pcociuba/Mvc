@@ -15,14 +15,14 @@ namespace ApiExplorerWebSite
         }
 
         [HttpGet]
-        [Produces("application/json")]
+        [Produces("application/json", "text/json")]
         public Product Specific()
         {
             return null;
         }
 
         [HttpGet]
-        [Produces("application/hal+json")]
+        [Produces("application/hal+json", "text/hal+json")]
         public Product NoMatch()
         {
             return null;

@@ -618,6 +618,9 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
 
             var applicationJson = Assert.Single(formats, f => f.MediaType == "application/json");
             Assert.Equal(typeof(JsonOutputFormatter).FullName, applicationJson.FormatterType);
+
+            var textJson = Assert.Single(formats, f => f.MediaType == "text/json");
+            Assert.Equal(typeof(JsonOutputFormatter).FullName, textJson.FormatterType);
         }
 
         [Fact]

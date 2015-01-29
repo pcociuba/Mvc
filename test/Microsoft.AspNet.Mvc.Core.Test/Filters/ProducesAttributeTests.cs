@@ -47,16 +47,9 @@ namespace Microsoft.AspNet.Mvc.Test
             var contentTypes = content.Split(',').Select(contentType => contentType.Trim()).ToArray();
 
             // Assert
-            var ex = Assert.Throws<InvalidOperationException>(
+            var ex = Assert.Throws<FormatException>(
                        () => new ProducesAttribute(contentTypes[0], contentTypes.Skip(1).ToArray()));
-            Assert.Equal(
-                string.Format("The argument '{0}' could not be parsed. See the inner exception for more information.",
-                              invalidContentType),
-                ex.Message);
-
-            var innerException = Assert.IsType<FormatException>(ex.InnerException);
-            Assert.Equal("Invalid value '" + (invalidContentType ?? "<null>") + "'.",
-                         innerException.Message);
+            Assert.Equal("Invalid value '" + (invalidContentType ?? "<null>") + "'.", ex.Message);
         }
 
         [Theory]
@@ -81,8 +74,8 @@ namespace Microsoft.AspNet.Mvc.Test
                        () => new ProducesAttribute(contentTypes[0], contentTypes.Skip(1).ToArray()));
 
             Assert.Equal(
-                string.Format("The argument '{0}' is invalid. A match all value for the media-type" +
-                              " and media-subtype is not allowed. Consider providing a more specific content type.", 
+                string.Format("The argument '{0}' is invalid. "+
+                              "Media types which match all types or match all subtypes are not supported.",
                               invalidContentType),
                 ex.Message);
         }

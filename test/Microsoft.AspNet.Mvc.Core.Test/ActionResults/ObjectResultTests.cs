@@ -642,8 +642,7 @@ namespace Microsoft.AspNet.Mvc.Core.Test.ActionResults
                 () => objectResult.ExecuteResultAsync(null));
 
             var expectedMessage = string.Format("The content-type '{0}' added in the 'ContentTypes' property is " +
-              "invalid. A match all value for the media-type and media-subtype is not allowed." +
-              " Consider providing a more specific content type.",
+              "invalid. Media types which match all types or match all subtypes are not supported.",
               invalidContentType);
             Assert.Equal(expectedMessage, exception.Message);
         }

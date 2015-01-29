@@ -44,22 +44,11 @@ namespace Microsoft.AspNet.Mvc
             var contentTypes = new List<MediaTypeHeaderValue>();
             foreach (var arg in completeArgs)
             {
-                MediaTypeHeaderValue contentType = null;
-                try
-                {
-                    contentType = MediaTypeHeaderValue.Parse(arg);
-                }
-                catch (FormatException formatException)
+                var contentType = MediaTypeHeaderValue.Parse(arg);
+                if (contentType.MatchesAllSubTypes || contentType.MatchesAllTypes)
                 {
                     throw new InvalidOperationException(
-                        Resources.FormatProduces_UnparsableContentType(arg),
-                        formatException);
-                }
-
-                if (contentType.MatchesAllSubTypes || contentType.MatchesAllTypes || contentType.Type == "*")
-                {
-                    throw new InvalidOperationException(
-                        Resources.FormatProduces_MatchAllContentType(arg));
+                        Resources.FormatMatchAllContentTypeIsNotAllowed(arg));
                 }
 
                 contentTypes.Add(contentType);

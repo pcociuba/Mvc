@@ -243,31 +243,6 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
             Assert.Equal(expectedBody, body);
         }
 
-        [Theory]
-        [InlineData("*/*", "All")]
-        [InlineData("application/*", "AllSubTypes")]
-        [InlineData("*/json", "AllTypes")]
-        public async Task ObjectResult_DoesNotAllow_MatchAll(string contentType, string actionName)
-        {
-            // Arrange
-            var server = TestServer.Create(_provider, _app);
-            var client = server.CreateClient();
-            var expectedContentType = MediaTypeHeaderValue.Parse(contentType);
-
-            // Act
-            var response = await client.GetAsync("http://localhost/ObjectResultMatchAll/" + actionName);
-
-            // Assert
-            var exception = response.GetServerException();
-
-            var expectedMessage = string.Format("The content-type '{0}' added in the 'ContentTypes' property is " +
-                "invalid. A match all value for the media-type and media-subtype is not allowed." +
-                " Consider providing a more specific content type.",
-                contentType);
-            Assert.Equal(typeof(InvalidOperationException).FullName, exception.ExceptionType);
-            Assert.Equal(expectedMessage, exception.ExceptionMessage);
-        }
-
         [Fact]
         public async Task JsonResult_UsesDefaultContentTypes_IfNoneAreAddedExplicitly()
         {

@@ -228,7 +228,7 @@ namespace Microsoft.AspNet.Mvc
             {
                 foreach (var contentType in ContentTypes)
                 {
-                    if (contentType.MatchesAllSubTypes || contentType.MatchesAllTypes || contentType.Type == "*")
+                    if (contentType.MatchesAllSubTypes || contentType.MatchesAllTypes)
                     {
                         throw new InvalidOperationException(
                             Resources.FormatObjectResult_MatchAllContentType(contentType, nameof(ContentTypes)));
