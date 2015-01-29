@@ -52,6 +52,14 @@ namespace Microsoft.AspNet.Mvc.Xml
             };
         }
 
+        /// <summary>
+        /// Gets an instance of <see cref="IWrapperProvider"/> for the supplied
+        /// type.
+        /// </summary>
+        /// <param name="wrapperProviderFactories">A list of <see cref="IWrapperProviderFactory"/>.</param>
+        /// <param name="wrapperProviderContext">The <see cref="WrapperProviderContext"/>.</param>
+        /// <returns>An instance of <see cref="IWrapperProvider"/> if there is a wrapping provider for the
+        /// supplied type, else null.</returns>
         public static IWrapperProvider GetWrapperProvider(
             [NotNull] IEnumerable<IWrapperProviderFactory> wrapperProviderFactories,
             [NotNull] WrapperProviderContext wrapperProviderContext)

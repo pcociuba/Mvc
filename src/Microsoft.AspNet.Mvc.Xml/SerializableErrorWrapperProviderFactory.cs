@@ -11,7 +11,13 @@ namespace Microsoft.AspNet.Mvc.Xml
     /// </summary>
     public class SerializableErrorWrapperProviderFactory : IWrapperProviderFactory
     {
-        /// <inheritdoc />
+        /// <summary>
+        /// Creates an instance of <see cref="SerializableErrorWrapperProvider"/> if the provided
+        /// declared type is <see cref="Microsoft.AspNet.Mvc.SerializableError"/>.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns>An instance of <see cref="SerializableErrorWrapperProvider"/> if the provided 
+        /// declared type is <see cref="Microsoft.AspNet.Mvc.SerializableError"/>, else null.</returns>
         public IWrapperProvider GetProvider([NotNull] WrapperProviderContext context)
         {
             if (context.DeclaredType == typeof(SerializableError))

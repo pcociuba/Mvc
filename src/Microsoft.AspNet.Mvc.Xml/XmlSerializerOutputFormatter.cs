@@ -168,8 +168,8 @@ namespace Microsoft.AspNet.Mvc.Xml
 
                 var wrappingType = GetSerializableType(resolvedType);
 
-                // Wrap the object only if the type is being wrapped
-                if (wrappingType != resolvedType)
+                // Wrap the object only if there is a wrapping type.
+                if (wrappingType != null && wrappingType != resolvedType)
                 {
                     IWrapperProvider wrapperProvider = FormattingUtilities.GetWrapperProvider(
                                                             WrapperProviderFactoryProvider.WrapperProviderFactories,
@@ -177,10 +177,7 @@ namespace Microsoft.AspNet.Mvc.Xml
                                                                                 declaredType: resolvedType,
                                                                                 isSerialization: true));
 
-                    if (wrapperProvider != null)
-                    {
                         obj = wrapperProvider.Wrap(obj);
-                    }
                 }
 
                 var xmlSerializer = CreateSerializer(wrappingType);

@@ -9,15 +9,15 @@ namespace Microsoft.AspNet.Mvc.Xml
     public class EnumerableWrapperProvider : IWrapperProvider
     {
         private readonly WrapperProviderContext _context;
-        private readonly Type _sourceIEnumerableGenericType;
+        private readonly Type _sourceEnumerableOfT;
         private readonly IEnumerable<IWrapperProviderFactory> _wrapperProviderFactories;
 
         public EnumerableWrapperProvider(
-            [NotNull] Type sourceIEnumerableGenericType,
+            [NotNull] Type sourceEnumerableOfT,
             [NotNull] IEnumerable<IWrapperProviderFactory> wrapperProviderFactories,
             [NotNull] WrapperProviderContext context)
         {
-            _sourceIEnumerableGenericType = sourceIEnumerableGenericType;
+            _sourceEnumerableOfT = sourceEnumerableOfT;
             _wrapperProviderFactories = wrapperProviderFactories;
             _context = context;
         }
@@ -28,7 +28,7 @@ namespace Microsoft.AspNet.Mvc.Xml
             get
             {
                 IWrapperProvider elementWrapperProvider = null;
-                return GetWrappingEnumerableType(out elementWrapperProvider);
+                return GetWrappingEnumerableOfT(out elementWrapperProvider);
             }
         }
 
@@ -41,43 +41,33 @@ namespace Microsoft.AspNet.Mvc.Xml
             }
 
             IWrapperProvider elementWrapperProvider;
-            var wrappingEnumerableType = GetWrappingEnumerableType(out elementWrapperProvider);
+            var wrappingEnumerableType = GetWrappingEnumerableOfT(out elementWrapperProvider);
 
             var wrappingEnumerableTypeConstructor = wrappingEnumerableType.GetConstructor(new[]
-                    {
-                        _sourceIEnumerableGenericType,
-                        typeof(IWrapperProvider)
-                    });
+                                                                                        {
+                                                                                            _sourceEnumerableOfT,
+                                                                                            typeof(IWrapperProvider)
+                                                                                        });
 
             return wrappingEnumerableTypeConstructor.Invoke(new object[] { original, elementWrapperProvider });
         }
 
-        private Type GetWrappingEnumerableType(out IWrapperProvider elementWrapperProvider)
+        private Type GetWrappingEnumerableOfT(out IWrapperProvider elementWrapperProvider)
         {
-            var declaredElementType = _sourceIEnumerableGenericType.GetGenericArguments()[0];
+            var declaredElementType = _sourceEnumerableOfT.GetGenericArguments()[0];
 
             // Since the T itself could be wrapped, get the wrapping type for it
             var wrapperProviderContext = new WrapperProviderContext(declaredElementType, _context.IsSerialization);
 
-            var wrappedOrDeclaredElementType = declaredElementType;
+            var wrappedElementType = declaredElementType;
 
-            elementWrapperProvider = null;
-            foreach (var wrapperProviderFactory in _wrapperProviderFactories)
+            elementWrapperProvider = FormattingUtilities.GetWrapperProvider(_wrapperProviderFactories, wrapperProviderContext);
+            if (elementWrapperProvider != null && elementWrapperProvider.WrappingType != null)
             {
-                elementWrapperProvider = wrapperProviderFactory.GetProvider(wrapperProviderContext);
-                if (elementWrapperProvider != null)
-                {
-                    var wrappingType = elementWrapperProvider.WrappingType;
-                    if (wrappingType != null)
-                    {
-                        wrappedOrDeclaredElementType = wrappingType;
-                    }
-
-                    break;
-                }
+                wrappedElementType = elementWrapperProvider.WrappingType;
             }
 
-            return typeof(DelegatingEnumerable<,>).MakeGenericType(wrappedOrDeclaredElementType, declaredElementType);
+            return typeof(DelegatingEnumerable<,>).MakeGenericType(wrappedElementType, declaredElementType);
         }
     }
 }
