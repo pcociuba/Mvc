@@ -19,8 +19,8 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
         private readonly Action<IApplicationBuilder> _app = new XmlFormattersWebSite.Startup().Configure;
 
         [Theory]
-        [InlineData("http://localhost/Wrapper/IEnumerableOfValueTypes")]
-        [InlineData("http://localhost/Wrapper/IQueryableOfValueTypes")]
+        [InlineData("http://localhost/IEnumerable/ValueTypes")]
+        [InlineData("http://localhost/IQueryable/ValueTypes")]
         public async Task CanWrite_ValueTypes(string url)
         {
             // Arrange
@@ -42,8 +42,8 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
         }
 
         [Theory]
-        [InlineData("http://localhost/Wrapper/IEnumerableOfNonWrappedTypes")]
-        [InlineData("http://localhost/Wrapper/IQueryableOfNonWrappedTypes")]
+        [InlineData("http://localhost/IEnumerable/NonWrappedTypes")]
+        [InlineData("http://localhost/IQueryable/NonWrappedTypes")]
         public async Task CanWrite_NonWrappedTypes(string url)
         {
             // Arrange
@@ -65,8 +65,8 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
         }
 
         [Theory]
-        [InlineData("http://localhost/Wrapper/IEnumerableOfNonWrappedTypes_NullInstance")]
-        [InlineData("http://localhost/Wrapper/IQueryableOfNonWrappedTypes_NullInstance")]
+        [InlineData("http://localhost/IEnumerable/NonWrappedTypes_NullInstance")]
+        [InlineData("http://localhost/IQueryable/NonWrappedTypes_NullInstance")]
         public async Task CanWrite_NonWrappedTypes_NullInstance(string url)
         {
             // Arrange
@@ -87,8 +87,8 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
         }
 
         [Theory]
-        [InlineData("http://localhost/Wrapper/IEnumerableOfNonWrappedTypes_Empty")]
-        [InlineData("http://localhost/Wrapper/IQueryableOfNonWrappedTypes_Empty")]
+        [InlineData("http://localhost/IEnumerable/NonWrappedTypes_Empty")]
+        [InlineData("http://localhost/IQueryable/NonWrappedTypes_Empty")]
         public async Task CanWrite_NonWrappedTypes_Empty(string url)
         {
             // Arrange
@@ -109,8 +109,8 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
         }
 
         [Theory]
-        [InlineData("http://localhost/Wrapper/IEnumerableOfWrappedTypes")]
-        [InlineData("http://localhost/Wrapper/IQueryableOfWrappedTypes")]
+        [InlineData("http://localhost/IEnumerable/WrappedTypes")]
+        [InlineData("http://localhost/IQueryable/WrappedTypes")]
         [InlineData("http://localhost/api/People")]
         public async Task CanWrite_WrappedTypes(string url)
         {
@@ -134,8 +134,8 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
         }
 
         [Theory]
-        [InlineData("http://localhost/Wrapper/IEnumerableOfWrappedTypes_Empty")]
-        [InlineData("http://localhost/Wrapper/IQueryableOfWrappedTypes_Empty")]
+        [InlineData("http://localhost/IEnumerable/WrappedTypes_Empty")]
+        [InlineData("http://localhost/IQueryable/WrappedTypes_Empty")]
         public async Task CanWrite_WrappedTypes_Empty(string url)
         {
             // Arrange
@@ -157,8 +157,8 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
 
 
         [Theory]
-        [InlineData("http://localhost/Wrapper/IEnumerableOfWrappedTypes_NullInstance")]
-        [InlineData("http://localhost/Wrapper/IQueryableOfWrappedTypes_NullInstance")]
+        [InlineData("http://localhost/IEnumerable/WrappedTypes_NullInstance")]
+        [InlineData("http://localhost/IQueryable/WrappedTypes_NullInstance")]
         public async Task CanWrite_WrappedTypes_NullInstance(string url)
         {
             // Arrange
@@ -179,35 +179,12 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
         }
 
         [Fact]
-        public async Task PostedSerializableError_IsBound()
-        {
-            // Arrange
-            var mediaType = "application/xml-xmlser";
-            var server = TestServer.Create(_services, _app);
-            var client = server.CreateClient();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(mediaType));
-            var expectedXml = "<Error><key1>key1-error</key1><key2>The input was not valid.</key2></Error>";
-            var requestContent = new StringContent(expectedXml, Encoding.UTF8, mediaType);
-
-            // Act
-            var response = await client.PostAsync("http://localhost/Wrapper/LogSerializableError", requestContent);
-
-            // Assert
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.NotNull(response.Content);
-            Assert.NotNull(response.Content.Headers.ContentType);
-            Assert.Equal(mediaType, response.Content.Headers.ContentType.MediaType);
-            var responseData = await response.Content.ReadAsStringAsync();
-            Assert.Equal(expectedXml, responseData);
-        }
-
-        [Fact]
         public async Task CanWrite_IEnumerableOf_SerializableErrors()
         {
             // Arrange
             var server = TestServer.Create(_services, _app);
             var client = server.CreateClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/Wrapper/IEnumerableOfSerializableErrors");
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://localhost/IEnumerable/SerializableErrors");
             request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/xml-xmlser"));
 
             // Act
