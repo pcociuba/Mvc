@@ -17,7 +17,7 @@ namespace Microsoft.AspNet.Mvc.Xml
     /// </summary>
     public class XmlDataContractSerializerOutputFormatter : OutputFormatter
     {
-        private IWrapperProviderFactoryProvider _wrapperProviderFactoryProvider;
+        private IList<IWrapperProviderFactory> _wrapperProviderFactories;
         private DataContractSerializerSettings _serializerSettings;
 
         /// <summary>
@@ -45,18 +45,20 @@ namespace Microsoft.AspNet.Mvc.Xml
 
             _serializerSettings = new DataContractSerializerSettings();
 
-            WrapperProviderFactoryProvider = new DefaultWrapperProviderFactoryProvider();
+            WrapperProviderFactories = new List<IWrapperProviderFactory>();
+            WrapperProviderFactories.Add(new EnumerableWrapperProviderFactory(WrapperProviderFactories));
+            WrapperProviderFactories.Add(new SerializableErrorWrapperProviderFactory());
         }
 
         /// <summary>
-        /// Gets or sets the provider which gives a list of <see cref="IWrapperProviderFactory"/> to
+        /// Gets or sets the list of <see cref="IWrapperProviderFactory"/> to
         /// wrap the objects being serialized.
         /// </summary>
-        public IWrapperProviderFactoryProvider WrapperProviderFactoryProvider
+        public IList<IWrapperProviderFactory> WrapperProviderFactories
         {
             get
             {
-                return _wrapperProviderFactoryProvider;
+                return _wrapperProviderFactories;
             }
             set
             {
@@ -65,7 +67,7 @@ namespace Microsoft.AspNet.Mvc.Xml
                     throw new ArgumentNullException(nameof(value));
                 }
 
-                _wrapperProviderFactoryProvider = value;
+                _wrapperProviderFactories = value;
             }
         }
 
@@ -119,7 +121,7 @@ namespace Microsoft.AspNet.Mvc.Xml
         protected virtual Type GetSerializableType(Type type)
         {
             IWrapperProvider wrapperProvider = FormattingUtilities.GetWrapperProvider(
-                                                        WrapperProviderFactoryProvider.WrapperProviderFactories,
+                                                        _wrapperProviderFactories,
                                                         new WrapperProviderContext(type, isSerialization: true));
 
             if (wrapperProvider != null && wrapperProvider.WrappingType != null)
@@ -195,7 +197,7 @@ namespace Microsoft.AspNet.Mvc.Xml
                 if (wrappingType != null && wrappingType != resolvedType)
                 {
                     IWrapperProvider wrapperProvider = FormattingUtilities.GetWrapperProvider(
-                                                            WrapperProviderFactoryProvider.WrapperProviderFactories,
+                                                            _wrapperProviderFactories,
                                                             new WrapperProviderContext(
                                                                                 declaredType: resolvedType,
                                                                                 isSerialization: true));

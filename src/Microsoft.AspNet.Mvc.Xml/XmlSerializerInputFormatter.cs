@@ -21,7 +21,7 @@ namespace Microsoft.AspNet.Mvc.Xml
     public class XmlSerializerInputFormatter : IInputFormatter
     {
         private readonly XmlDictionaryReaderQuotas _readerQuotas = FormattingUtilities.GetDefaultXmlReaderQuotas();
-        private IWrapperProviderFactoryProvider _wrapperProviderFactoryProvider;
+        private IList<IWrapperProviderFactory> _wrapperProviderFactories;
 
         /// <summary>
         /// Initializes a new instance of XmlSerializerInputFormatter.
@@ -36,18 +36,20 @@ namespace Microsoft.AspNet.Mvc.Xml
             SupportedMediaTypes.Add(MediaTypeHeaderValue.Parse("application/xml"));
             SupportedMediaTypes.Add(MediaTypeHeaderValue.Parse("text/xml"));
 
-            WrapperProviderFactoryProvider = new DefaultWrapperProviderFactoryProvider();
+            WrapperProviderFactories = new List<IWrapperProviderFactory>();
+            WrapperProviderFactories.Add(new EnumerableWrapperProviderFactory(WrapperProviderFactories));
+            WrapperProviderFactories.Add(new SerializableErrorWrapperProviderFactory());
         }
 
         /// <summary>
-        /// Gets or sets the provider which gives a list of <see cref="IWrapperProviderFactory"/> to
+        /// Gets or sets the list of <see cref="IWrapperProviderFactory"/> to
         /// provide the wrapping type for de-serialization.
         /// </summary>
-        public IWrapperProviderFactoryProvider WrapperProviderFactoryProvider
+        public IList<IWrapperProviderFactory> WrapperProviderFactories
         {
             get
             {
-                return _wrapperProviderFactoryProvider;
+                return _wrapperProviderFactories;
             }
             set
             {
@@ -56,7 +58,7 @@ namespace Microsoft.AspNet.Mvc.Xml
                     throw new ArgumentNullException(nameof(value));
                 }
 
-                _wrapperProviderFactoryProvider = value;
+                _wrapperProviderFactories = value;
             }
         }
 
@@ -153,7 +155,7 @@ namespace Microsoft.AspNet.Mvc.Xml
                 var type = context.ModelType;
 
                 IWrapperProvider wrapperProvider = FormattingUtilities.GetWrapperProvider(
-                                                                WrapperProviderFactoryProvider.WrapperProviderFactories,
+                                                                _wrapperProviderFactories,
                                                                 new WrapperProviderContext(
                                                                                         declaredType: type,
                                                                                         isSerialization: false));

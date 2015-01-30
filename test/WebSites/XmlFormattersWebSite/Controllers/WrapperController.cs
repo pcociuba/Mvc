@@ -18,6 +18,11 @@ namespace XmlFormattersWebSite.Controllers
             return new[] { "value1", "value2" };
         }
 
+        public IEnumerable<string> IEnumerableOfNonWrappedTypes_Empty()
+        {
+            return new string[] { };
+        }
+
         public IEnumerable<Person> IEnumerableOfWrappedTypes()
         {
             return new[] {
@@ -25,8 +30,11 @@ namespace XmlFormattersWebSite.Controllers
                 new Person() { Id = 11, Name = "Jimmy" }
             };
         }
-
-        //---------------------
+        
+        public IEnumerable<Person> IEnumerableOfWrappedTypes_Empty()
+        {
+            return new Person[] { };
+        }
 
         public IEnumerable<string> IEnumerableOfNonWrappedTypes_NullInstance()
         {
@@ -37,34 +45,6 @@ namespace XmlFormattersWebSite.Controllers
         {
             return null;
         }
-
-        //---------------------
-
-        public IEnumerable<IEnumerable<string>> NestedIEnumerableOfNonWrappedTypes()
-        {
-            return new[] { new[] {
-                "A",
-                "B"
-            },
-            new[] {
-                "C",
-                "D"
-            }};
-        }
-
-        public IEnumerable<IEnumerable<Person>> NestedIEnumerableOfWrappedTypes()
-        {
-            return new[] { new[] {
-                new Person() { Id = 10, Name = "Mikey" },
-                new Person() { Id = 11, Name = "Jimmy" }
-            },
-            new[] {
-                new Person() { Id = 12, Name = "Johnny" },
-                new Person() { Id = 13, Name = "Timmy" }
-            }};
-        }
-
-        // --------------------
 
         public IQueryable<int> IQueryableOfValueTypes()
         {
@@ -84,7 +64,15 @@ namespace XmlFormattersWebSite.Controllers
             }.AsQueryable();
         }
 
-        //---------------------
+        public IQueryable<Person> IQueryableOfWrappedTypes_Empty()
+        {
+            return (new Person[] { }).AsQueryable();
+        }
+
+        public IQueryable<string> IQueryableOfNonWrappedTypes_Empty()
+        {
+            return (new string[] { }).AsQueryable();
+        }
 
         public IQueryable<string> IQueryableOfNonWrappedTypes_NullInstance()
         {
@@ -96,9 +84,6 @@ namespace XmlFormattersWebSite.Controllers
             return null;
         }
 
-        // --------------------
-
-        [HttpGet]
         public SerializableError SerializableError()
         {
             var error1 = new SerializableError();
@@ -108,7 +93,6 @@ namespace XmlFormattersWebSite.Controllers
             return error1;
         }
 
-        [HttpGet]
         public IEnumerable<SerializableError> IEnumerableOfSerializableErrors()
         {
             List<SerializableError> errors = new List<SerializableError>();
@@ -124,7 +108,6 @@ namespace XmlFormattersWebSite.Controllers
             return errors;
         }
 
-        [HttpPost]
         public IActionResult LogSerializableError([FromBody] SerializableError error)
         {
             if (!ModelState.IsValid)

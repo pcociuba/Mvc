@@ -52,8 +52,8 @@ namespace Microsoft.AspNet.Mvc.Xml
                                                                     Type expectedWrappingType)
         {
             // Arrange
-            var wrapperFactoryProvider = new DefaultWrapperProviderFactoryProvider();
-            var enumerableWrapperProviderFactory = new EnumerableWrapperProviderFactory(wrapperFactoryProvider);
+            var wrapperProviderFactories = GetWrapperProviderFactories();
+            var enumerableWrapperProviderFactory = new EnumerableWrapperProviderFactory(wrapperProviderFactories);
             var wrapperProviderContext = new WrapperProviderContext(declaredType, isSerialization: true);
 
             // Act
@@ -105,8 +105,8 @@ namespace Microsoft.AspNet.Mvc.Xml
                                                                     Type expectedWrappingType)
         {
             // Arrange
-            var wrapperFactoryProvider = new DefaultWrapperProviderFactoryProvider();
-            var enumerableWrapperProviderFactory = new EnumerableWrapperProviderFactory(wrapperFactoryProvider);
+            var wrapperProviderFactories = GetWrapperProviderFactories();
+            var enumerableWrapperProviderFactory = new EnumerableWrapperProviderFactory(wrapperProviderFactories);
             var wrapperProviderContext = new WrapperProviderContext(declaredType, isSerialization: true);
 
             // Act
@@ -157,8 +157,8 @@ namespace Microsoft.AspNet.Mvc.Xml
                                                                     object objectToBeWrapped)
         {
             // Arrange
-            var wrapperFactoryProvider = new DefaultWrapperProviderFactoryProvider();
-            var enumerableWrapperProviderFactory = new EnumerableWrapperProviderFactory(wrapperFactoryProvider);
+            var wrapperProviderFactories = GetWrapperProviderFactories();
+            var enumerableWrapperProviderFactory = new EnumerableWrapperProviderFactory(wrapperProviderFactories);
             var wrapperProviderContext = new WrapperProviderContext(declaredType, isSerialization: true);
 
             // Act
@@ -166,6 +166,15 @@ namespace Microsoft.AspNet.Mvc.Xml
 
             // Assert
             Assert.Null(wrapperProvider);
+        }
+
+        private IEnumerable<IWrapperProviderFactory> GetWrapperProviderFactories()
+        {
+            var wrapperProviderFactories = new List<IWrapperProviderFactory>();
+            wrapperProviderFactories.Add(new EnumerableWrapperProviderFactory(wrapperProviderFactories));
+            wrapperProviderFactories.Add(new SerializableErrorWrapperProviderFactory());
+
+            return wrapperProviderFactories;
         }
 
         internal class Person

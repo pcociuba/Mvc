@@ -12,15 +12,15 @@ namespace Microsoft.AspNet.Mvc.Xml
     /// </summary>
     public class EnumerableWrapperProviderFactory : IWrapperProviderFactory
     {
-        private readonly IWrapperProviderFactoryProvider _wrapperProviderFactoryProvider;
+        private readonly IEnumerable<IWrapperProviderFactory> _wrapperProviderFactories;
 
         /// <summary>
         /// Initializes an <see cref="EnumerableWrapperProviderFactory"/> with the  
         /// </summary>
-        /// <param name="wrapperProviderFactoryProvider"></param>
-        public EnumerableWrapperProviderFactory(IWrapperProviderFactoryProvider wrapperProviderFactoryProvider)
+        /// <param name="wrapperProviderFactories"></param>
+        public EnumerableWrapperProviderFactory(IEnumerable<IWrapperProviderFactory> wrapperProviderFactories)
         {
-            _wrapperProviderFactoryProvider = wrapperProviderFactoryProvider;
+            _wrapperProviderFactories = wrapperProviderFactories;
         }
 
         /// <summary>
@@ -37,15 +37,16 @@ namespace Microsoft.AspNet.Mvc.Xml
             {
                 var declaredType = context.DeclaredType;
 
+                // We only for types which are interfaces (ex: IEnumerable<>, IQueryable<> etc.) and not
+                // concrete types like List<T>, Collection<T> which implement IEnumerable<T>.
                 if (declaredType != null && declaredType.IsInterface() && declaredType.IsGenericType())
                 {
-                    // check if we can get a enumerable generic type. Example: IEnumerable<SerializableError>
                     var enumerableOfT = declaredType.ExtractGenericInterface(typeof(IEnumerable<>));
                     if (enumerableOfT != null)
                     {
                         return new EnumerableWrapperProvider(
                                                         enumerableOfT,
-                                                        _wrapperProviderFactoryProvider.WrapperProviderFactories,
+                                                        _wrapperProviderFactories,
                                                         context);
                     }
                 }

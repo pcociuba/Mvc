@@ -65,6 +65,28 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
         }
 
         [Theory]
+        [InlineData("http://localhost/Wrapper/IEnumerableOfNonWrappedTypes_Empty")]
+        [InlineData("http://localhost/Wrapper/IQueryableOfNonWrappedTypes_Empty")]
+        public async Task CanWrite_NonWrappedTypes_Empty(string url)
+        {
+            // Arrange
+            var server = TestServer.Create(_services, _app);
+            var client = server.CreateClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/xml-dcs"));
+
+            // Act
+            var response = await client.SendAsync(request);
+
+            //Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var result = await response.Content.ReadAsStringAsync();
+            Assert.Equal("<ArrayOfstring xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\"" +
+                        " xmlns=\"http://schemas.microsoft.com/2003/10/Serialization/Arrays\" />",
+                         result);
+        }
+
+        [Theory]
         [InlineData("http://localhost/Wrapper/IEnumerableOfNonWrappedTypes_NullInstance")]
         [InlineData("http://localhost/Wrapper/IQueryableOfNonWrappedTypes_NullInstance")]
         public async Task CanWrite_NonWrappedTypes_NullInstance(string url)
@@ -108,6 +130,28 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
                 " xmlns=\"http://schemas.datacontract.org/2004/07/XmlFormattersWebSite\"><PersonWrapper>" +
                 "<Age>35</Age><Id>10</Id><Name>Mike</Name></PersonWrapper><PersonWrapper><Age>35</Age><Id>" +
                 "11</Id><Name>Jimmy</Name></PersonWrapper></ArrayOfPersonWrapper>",
+                result);
+        }
+
+        [Theory]
+        [InlineData("http://localhost/Wrapper/IEnumerableOfWrappedTypes_Empty")]
+        [InlineData("http://localhost/Wrapper/IQueryableOfWrappedTypes_Empty")]
+        public async Task CanWrite_WrappedTypes_Empty(string url)
+        {
+            // Arrange
+            var server = TestServer.Create(_services, _app);
+            var client = server.CreateClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/xml-dcs"));
+
+            // Act
+            var response = await client.SendAsync(request);
+
+            //Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var result = await response.Content.ReadAsStringAsync();
+            Assert.Equal("<ArrayOfPersonWrapper xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\"" +
+                " xmlns=\"http://schemas.datacontract.org/2004/07/XmlFormattersWebSite\" />",
                 result);
         }
 

@@ -87,6 +87,28 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
         }
 
         [Theory]
+        [InlineData("http://localhost/Wrapper/IEnumerableOfNonWrappedTypes_Empty")]
+        [InlineData("http://localhost/Wrapper/IQueryableOfNonWrappedTypes_Empty")]
+        public async Task CanWrite_NonWrappedTypes_Empty(string url)
+        {
+            // Arrange
+            var server = TestServer.Create(_services, _app);
+            var client = server.CreateClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/xml-xmlser"));
+
+            // Act
+            var response = await client.SendAsync(request);
+
+            //Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var result = await response.Content.ReadAsStringAsync();
+            Assert.Equal("<ArrayOfString xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"" +
+                " xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" />",
+                result);
+        }
+
+        [Theory]
         [InlineData("http://localhost/Wrapper/IEnumerableOfWrappedTypes")]
         [InlineData("http://localhost/Wrapper/IQueryableOfWrappedTypes")]
         [InlineData("http://localhost/api/People")]
@@ -110,6 +132,29 @@ namespace Microsoft.AspNet.Mvc.FunctionalTests
                          "<Name>Jimmy</Name><Age>35</Age></PersonWrapper></ArrayOfPersonWrapper>",
                          result);
         }
+
+        [Theory]
+        [InlineData("http://localhost/Wrapper/IEnumerableOfWrappedTypes_Empty")]
+        [InlineData("http://localhost/Wrapper/IQueryableOfWrappedTypes_Empty")]
+        public async Task CanWrite_WrappedTypes_Empty(string url)
+        {
+            // Arrange
+            var server = TestServer.Create(_services, _app);
+            var client = server.CreateClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/xml-xmlser"));
+
+            // Act
+            var response = await client.SendAsync(request);
+
+            //Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var result = await response.Content.ReadAsStringAsync();
+            Assert.Equal("<ArrayOfPersonWrapper xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"" +
+                " xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" />",
+                result);
+        }
+
 
         [Theory]
         [InlineData("http://localhost/Wrapper/IEnumerableOfWrappedTypes_NullInstance")]

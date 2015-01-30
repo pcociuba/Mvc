@@ -22,9 +22,11 @@ namespace Microsoft.AspNet.Mvc.Xml
 
         /// <summary>
         /// Initializes a <see cref="DelegatingEnumerable{TWrapped, TDeclared}"/>. 
+        /// </summary>
+        /// <remarks>
         /// This constructor is necessary for <see cref="System.Runtime.Serialization.DataContractSerializer"/> 
         /// to serialize.
-        /// </summary>
+        /// </remarks>
         public DelegatingEnumerable()
         {
             _source = Enumerable.Empty<TDeclared>();

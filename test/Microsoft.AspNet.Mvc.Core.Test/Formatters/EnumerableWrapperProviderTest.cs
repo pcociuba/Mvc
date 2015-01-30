@@ -24,10 +24,10 @@ namespace Microsoft.AspNet.Mvc.Xml
         public void Gets_DelegatingWrappingType(Type declaredEnumerableOfT, Type expectedType)
         {
             // Arrange
-            var wrapperProviderFactoryProvider = new DefaultWrapperProviderFactoryProvider();
+            var wrapperProviderFactories = GetWrapperProviderFactories();
             var wrapperProvider = new EnumerableWrapperProvider(
                                         declaredEnumerableOfT,
-                                        wrapperProviderFactoryProvider.WrapperProviderFactories,
+                                        wrapperProviderFactories,
                                         new WrapperProviderContext(declaredEnumerableOfT, isSerialization: true));
 
             // Act
@@ -43,10 +43,10 @@ namespace Microsoft.AspNet.Mvc.Xml
         {
             // Arrange
             var declaredEnumerableOfT = typeof(IEnumerable<int>);
-            var wrapperProviderFactoryProvider = new DefaultWrapperProviderFactoryProvider();
+            var wrapperProviderFactories = GetWrapperProviderFactories();
             var wrapperProvider = new EnumerableWrapperProvider(
                                         declaredEnumerableOfT,
-                                        wrapperProviderFactoryProvider.WrapperProviderFactories,
+                                        wrapperProviderFactories,
                                         new WrapperProviderContext(declaredEnumerableOfT, isSerialization: true));
 
             // Act
@@ -65,10 +65,10 @@ namespace Microsoft.AspNet.Mvc.Xml
         {
             // Arrange
             var declaredEnumerableOfT = typeof(IEnumerable<int>);
-            var wrapperProviderFactoryProvider = new DefaultWrapperProviderFactoryProvider();
+            var wrapperProviderFactories = GetWrapperProviderFactories();
             var wrapperProvider = new EnumerableWrapperProvider(
                                         declaredEnumerableOfT,
-                                        wrapperProviderFactoryProvider.WrapperProviderFactories,
+                                        wrapperProviderFactories,
                                         new WrapperProviderContext(declaredEnumerableOfT, isSerialization: true));
 
             // Act
@@ -77,6 +77,15 @@ namespace Microsoft.AspNet.Mvc.Xml
             // Assert
             Assert.Equal(typeof(DelegatingEnumerable<int, int>), wrapperProvider.WrappingType);
             Assert.Null(wrapped);
+        }
+
+        private IEnumerable<IWrapperProviderFactory> GetWrapperProviderFactories()
+        {
+            var wrapperProviderFactories = new List<IWrapperProviderFactory>();
+            wrapperProviderFactories.Add(new EnumerableWrapperProviderFactory(wrapperProviderFactories));
+            wrapperProviderFactories.Add(new SerializableErrorWrapperProviderFactory());
+
+            return wrapperProviderFactories;
         }
     }
 }
